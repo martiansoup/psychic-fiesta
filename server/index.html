@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>Neopixels</title>
+<script src="lib/jquery.js"></script>
+<script src="lib/codemirror.js"></script>
+<link rel="stylesheet" href="lib/codemirror.css">
+<style type="text/css">
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    padding: 10px;
+    font-family: sans-serif;
+  }
+
+  input {
+    margin: 10px;
+    width: 200px;
+    font-family: sans-serif;
+  }
+
+  #loading {
+    margin: 10px;
+    font-family: sans-serif;
+  }
+</style>
+<script src="mode/python/python.js"></script>
+<script type="text/javascript">
+
+window.onload = function () {
+  var elem = document.getElementById("source-code");
+
+  $.get( "code", function( data ) {
+    $( "#source-code" ).html( data );
+
+    document.getElementById("loading").style = "display: none;";
+    document.getElementById("loaded").style = "display: block;";
+
+    var code = CodeMirror.fromTextArea(elem, {
+      lineNumbers: true,
+      viewportMargin: Infinity
+    });
+
+  });
+
+  $("#upload").click(function() {
+    $.get( "upload", function(data) {});
+    return false;
+  });
+  $("#status").click(function() {
+    $.get( "status", function(data) {
+      window.alert(data);
+    });
+    return false;
+  });
+}
+
+</script>
+</head>
+<body>
+<h1>Lights</h1>
+
+<div id="loading">
+Loading code
+</div>
+<div id="loaded" style="display: none;">
+<form action="/update" method="post">
+  <textarea id="source-code" name="src">
+  </textarea>
+  <input id="sb" type="submit" value="Update Code">
+  <input id="status" type="button" value="Show Status">
+  <input id="upload" type="button" value="Upload Code">
+</form>
+</div>
+
+</body>
+</html>
