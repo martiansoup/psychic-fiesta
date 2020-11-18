@@ -1,0 +1,10 @@
+[Unit]
+Description=Light Strip Editor
+After=graphical.target
+
+[Service]
+ExecStart=/home/pi/psychic-fiesta/serve.py
+
+[Install]
+WantedBy=graphical.target
+
