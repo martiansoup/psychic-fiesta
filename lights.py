@@ -322,17 +322,17 @@ to_light = []
 to_drop = []
 lit = []
 processing = []
-colours = {}
+twinkle_colours = {}
 
 def twinkle():
-    global to_light, to_drop, lit, processing, colours
+    global to_light, to_drop, lit, processing, twinkle_colours
 
     if len(processing) < 20:
         tolightid = random.randrange(num_pixels)
         if tolightid not in processing:
             to_light.append([tolightid, 0])
             processing.append(tolightid)
-            colours[tolightid] = (random.randrange(255), random.randrange(255), random.randrange(255))
+            twinkle_colours[tolightid] = (random.randrange(255), random.randrange(255), random.randrange(255))
 
     if len(lit) >= 10:
         random.shuffle(lit)
@@ -342,7 +342,7 @@ def twinkle():
     for i in range(len(to_drop)):
         e = to_drop[i]
         e[1] = e[1] - 25
-        colour = colours[e[0]]
+        colour = twinkle_colours[e[0]]
         r = ((e[1] * colour[0]) // 255) & 255
         g = ((e[1] * colour[1]) // 255) & 255
         b = ((e[1] * colour[2]) // 255) & 255
@@ -356,7 +356,7 @@ def twinkle():
     for i in range(len(to_light)):
         e = to_light[i]
         e[1] = e[1] + 25
-        colour = colours[e[0]]
+        colour = twinkle_colours[e[0]]
         r = ((e[1] * colour[0]) // 255) & 255
         g = ((e[1] * colour[1]) // 255) & 255
         b = ((e[1] * colour[2]) // 255) & 255
