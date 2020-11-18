@@ -16,6 +16,8 @@ import board
 import neopixel
 #  'GPIO' allows reading a button
 import RPi.GPIO as GPIO
+#  'random' for random number generating
+import random
 
 #######################
 # Setup the neopixels #
@@ -314,6 +316,60 @@ def tracer(colours):
         time.sleep(0.1)
 # This is the end of the tracer function.
 
+# This function twinkles random pixels on and off.
+# It's a bit involved so I haven't documented it in detail.
+to_light = []
+to_drop = []
+lit = []
+processing = []
+colours = {}
+
+def twinkle():
+    global to_light, to_drop, lit, processing, colours
+
+    if len(processing) < 20:
+        tolightid = random.randrange(num_pixels)
+        if tolightid not in processing:
+            to_light.append([tolightid, 0])
+            processing.append(tolightid)
+            colours[tolightid] = (random.randrange(255), random.randrange(255), random.randrange(255))
+
+    if len(lit) >= 10:
+        random.shuffle(lit)
+        id = lit.pop()
+        to_drop.append([id, 250])
+
+    for i in range(len(to_drop)):
+        e = to_drop[i]
+        e[1] = e[1] - 25
+        colour = colours[e[0]]
+        r = ((e[1] * colour[0]) // 255) & 255
+        g = ((e[1] * colour[1]) // 255) & 255
+        b = ((e[1] * colour[2]) // 255) & 255
+        pixels[e[0]] = (r, g, b)
+        if e[1] != 0:
+            to_drop[i] = e
+        else:
+            processing.remove(e[0])
+    to_drop = [e for e in to_drop if e[1] != 0]
+
+    for i in range(len(to_light)):
+        e = to_light[i]
+        e[1] = e[1] + 25
+        colour = colours[e[0]]
+        r = ((e[1] * colour[0]) // 255) & 255
+        g = ((e[1] * colour[1]) // 255) & 255
+        b = ((e[1] * colour[2]) // 255) & 255
+        pixels[e[0]] = (r, g, b)
+        if e[1] >= 250:
+            lit.append(e[0])
+        else:
+            to_light[i] = e
+    to_light = [e for e in to_light if e[1] < 250]
+
+    pixels.show()
+    time.sleep(0.05)
+# This is the end of the twinkle function
 
 ########################
 # Setup button presses #
@@ -394,6 +450,8 @@ while True:
             (0, 255, 0)
         ]
         tracer(colours)
+    elif current_pattern == 8:
+        twinkle()
     else:
         # Gone past the end of the patterns so we reset the
         # index to zero to start again at the first pattern.
@@ -402,3 +460,4 @@ while True:
     if increment_pattern:
         current_pattern += 1
         increment_pattern = False
+        pixels.fill((0, 0, 0))
